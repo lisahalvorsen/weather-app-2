@@ -1,4 +1,4 @@
-namespace WeatherApi.Models;
+namespace WeatherShared;
 using System.Text.Json.Serialization;
 
 public class MainData

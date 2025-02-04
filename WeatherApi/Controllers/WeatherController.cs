@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using WeatherApi.Models;
+using WeatherShared;
 
 namespace WeatherApi.Controllers;
 
@@ -9,16 +9,18 @@ namespace WeatherApi.Controllers;
 public class WeatherController : ControllerBase
 {
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
 
-    public WeatherController(HttpClient httpClient)
+    public WeatherController(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
+        _configuration = configuration;
     }
 
     [HttpGet("{city}")]
     public async Task<IActionResult> GetWeather(string city)
     {
-        const string apiKey = "0aa7e82eceb42a9d2aab4da21df1efeb";
+        var apiKey = _configuration["OpenWeather:ApiKey"];
         var apiUrl = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}&units=metric";
 
         try
@@ -60,3 +62,11 @@ public class WeatherController : ControllerBase
         }
     }
 }
+
+
+// public static WeatherCondition MapWeatherCondition(string apiCondition)
+// {
+//     return Enum.TryParse(apiCondition, true, out WeatherCondition condition)
+//         ? condition
+//         : WeatherCondition.Other;
+// }

@@ -1,5 +1,4 @@
-namespace WeatherApi.Models;
-
+namespace WeatherShared;
 public class WeatherApiResponse
 {
     public required MainData Main { get; init; }

@@ -1,4 +1,4 @@
-namespace WeatherApi.Models;
+namespace WeatherShared;
 
 public class WindData
 {

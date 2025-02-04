@@ -1,8 +1,9 @@
 @page "/weatherforecast"
-@using WeatherBlazor.Models
+@using WeatherShared
 @inject HttpClient Http
+@inject IConfiguration Configuration
 
-<div>Hei</div>
+<h3>Været i @(_city ?? "Ingen by valgt")</h3>
 
 <input @bind="_city" placeholder="Se værmelding for ..."/>
 
@@ -10,43 +11,52 @@
 
 @if (_weatherData != null)
 {
-    <div>Sted: @_weatherData.City</div>
     <div>Temperatur: @_weatherData.Temperature°C</div>
-    <div>Føles som: @_weatherData.FeelsLike</div>
-    <div>@_weatherData.Description</div>
+    <div>Føles som: @_weatherData.FeelsLike°C</div>
+    <div>Beskrivelse: @_weatherData.Description</div>
     <div>Vær: @_weatherData.Condition</div>
-    <div>Luftfuktighet: @_weatherData.Humidity</div>
-    <div>Vind: @_weatherData.WindSpeed, @_weatherData.WindDirection</div>
+    <div>Luftfuktighet: @_weatherData.Humidity%</div>
+    <div>Vind: @_weatherData.WindSpeed m/s, @_weatherData.WindDirection</div>
+}
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div style="color:red">@_errorMessage</div>
 }
 
 @code {
     private string? _city;
     private WeatherData? _weatherData;
+    private string? _errorMessage;
 
     private async Task GetWeatherForecast()
     {
+        if (string.IsNullOrWhiteSpace(_city))
+        {
+            _errorMessage = "Vennligst skriv inn en by.";
+            return;
+        }
+        
         try
         {
-            var apiUrl = $"https://localhost:7291/api/weather/{_city}";
-            Console.WriteLine($"Kaller API: {apiUrl}");
+            var baseUrl = Configuration["ApiBaseUrl"] ?? "https://localhost:7291";
+            var apiUrl = $"{baseUrl}/api/weather/{_city}";
 
             var response = await Http.GetAsync(apiUrl);
             
             if (!response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Feil fra API: {response.StatusCode}");
+                _errorMessage = $"Feil fra API: {response.StatusCode}";
                 return;
             }
 
-            var json = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"API-respons: {json}");
-
             _weatherData = await response.Content.ReadFromJsonAsync<WeatherData>();
+            _errorMessage = null;
+            
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception: {ex.Message}");
+            _errorMessage = $"Noe gikk galt: {ex.Message}";
         }
     }
-
 }

@@ -1,4 +1,4 @@
-namespace WeatherBlazor.Models;
+namespace WeatherShared;
 
 public enum WeatherCondition
 {
