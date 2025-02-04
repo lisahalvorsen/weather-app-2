@@ -2,12 +2,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 
 const string corsPolicyName = "AllowBlazorClient";
+var allowedOrigins = builder.Configuration["AllowedCorsOrigin"] ?? "https://localhost:7237";
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(corsPolicyName, policy =>
     {
-        policy.WithOrigins("https://localhost:7237")
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyMethod()  
             .AllowAnyHeader() 
             .AllowCredentials(); 
