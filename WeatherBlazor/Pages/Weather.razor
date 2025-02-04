@@ -1,60 +1,52 @@
-﻿@page "/weather"
+@page "/weatherforecast"
+@using WeatherBlazor.Models
 @inject HttpClient Http
 
-<PageTitle>Weather</PageTitle>
+<div>Hei</div>
 
-<h1>Weather</h1>
+<input @bind="_city" placeholder="Se værmelding for ..."/>
 
-<p>This component demonstrates fetching data from the server.</p>
+<button @onclick="GetWeatherForecast">Vis værmelding</button>
 
-@if (forecasts == null)
+@if (_weatherData != null)
 {
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th aria-label="Temperature in Celsius">Temp. (C)</th>
-            <th aria-label="Temperature in Farenheit">Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var forecast in forecasts)
-        {
-            <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <div>Sted: @_weatherData.City</div>
+    <div>Temperatur: @_weatherData.Temperature°C</div>
+    <div>Føles som: @_weatherData.FeelsLike</div>
+    <div>@_weatherData.Description</div>
+    <div>Vær: @_weatherData.Condition</div>
+    <div>Luftfuktighet: @_weatherData.Humidity</div>
+    <div>Vind: @_weatherData.WindSpeed, @_weatherData.WindDirection</div>
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private string? _city;
+    private WeatherData? _weatherData;
 
-    protected override async Task OnInitializedAsync()
+    private async Task GetWeatherForecast()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }
+        try
+        {
+            var apiUrl = $"https://localhost:7291/api/weather/{_city}";
+            Console.WriteLine($"Kaller API: {apiUrl}");
 
-    public class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
+            var response = await Http.GetAsync(apiUrl);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Feil fra API: {response.StatusCode}");
+                return;
+            }
 
-        public int TemperatureC { get; set; }
+            var json = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"API-respons: {json}");
 
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+            _weatherData = await response.Content.ReadFromJsonAsync<WeatherData>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
     }
 
 }

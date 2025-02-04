@@ -1,0 +1,17 @@
+@page "/test"
+
+<h3>Blazor Basics 🥳</h3>
+<p>Antall klikk: @_count</p>
+
+<button @onclick="IncrementCount">Klikk meg!</button>
+
+@code {
+
+    private int _count = 0;
+
+    private void IncrementCount()
+    {
+        _count++;
+    }
+
+}
