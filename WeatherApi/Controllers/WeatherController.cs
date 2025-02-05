@@ -21,7 +21,7 @@ public class WeatherController : ControllerBase
     public async Task<IActionResult> GetWeather(string city)
     {
         var apiKey = _configuration["OpenWeather:ApiKey"];
-        var apiUrl = $"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}&units=metric";
+        var apiUrl = $"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=no&appid={apiKey}";
 
         try
         {

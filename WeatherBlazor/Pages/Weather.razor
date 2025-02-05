@@ -4,7 +4,7 @@
 @inject IConfiguration Configuration
 @namespace WeatherBlazor.Pages
 
-<img src="img/brislogo.png" alt="Bris logo" />
+<img src="img/brislogo.png" alt="Bris logo"/>
 
 <h3>Været i @(_city ?? "Ingen by valgt")</h3>
 
@@ -15,12 +15,11 @@
 @if (_weatherData != null)
 {
     <div>
-        <div>Temperatur: @_weatherData.Temperature°C</div>
-        <div>Føles som: @_weatherData.FeelsLike°C</div>
-        <div>Beskrivelse: @_weatherData.Description</div>
-        <div>Vær: @_weatherData.Condition</div>
+        <div>Temperatur: @Math.Round(_weatherData.Temperature, 1)°C</div>
+        <div>Føles som: @Math.Round(_weatherData.FeelsLike, 1)°C</div>
+        <div>Beskrivelse: @_weatherData.Description @GetWeatherEmoji()</div>
         <div>Luftfuktighet: @_weatherData.Humidity%</div>
-        <div>Vind: @_weatherData.WindSpeed m/s, @_weatherData.WindDirection</div>
+        <div>Vind: @Math.Round(_weatherData.WindSpeed, 1) m/s, @_weatherData.WindDirection°</div>
     </div>
 }
 
@@ -62,5 +61,22 @@
         {
             _errorMessage = $"Noe gikk galt: {ex.Message}";
         }
+    }
+
+    private string GetWeatherEmoji()
+    {
+        var emoji = _weatherData.Condition switch
+        {
+            WeatherCondition.Clear => "☀️",
+            WeatherCondition.Clouds => "☁️",
+            WeatherCondition.Rain => "🌧️",
+            WeatherCondition.Snow => "🌨️",
+            WeatherCondition.Sun => "☀️",
+            WeatherCondition.Wind => "💨",
+            WeatherCondition.Other => "❔",
+            _ => ""
+        };
+
+        return emoji;
     }
 }
