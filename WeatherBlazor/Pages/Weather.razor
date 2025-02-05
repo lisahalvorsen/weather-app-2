@@ -2,6 +2,9 @@
 @using WeatherShared
 @inject HttpClient Http
 @inject IConfiguration Configuration
+@namespace WeatherBlazor.Pages
+
+<img src="img/brislogo.png" alt="Bris logo" />
 
 <h3>Været i @(_city ?? "Ingen by valgt")</h3>
 
@@ -11,12 +14,14 @@
 
 @if (_weatherData != null)
 {
-    <div>Temperatur: @_weatherData.Temperature°C</div>
-    <div>Føles som: @_weatherData.FeelsLike°C</div>
-    <div>Beskrivelse: @_weatherData.Description</div>
-    <div>Vær: @_weatherData.Condition</div>
-    <div>Luftfuktighet: @_weatherData.Humidity%</div>
-    <div>Vind: @_weatherData.WindSpeed m/s, @_weatherData.WindDirection</div>
+    <div>
+        <div>Temperatur: @_weatherData.Temperature°C</div>
+        <div>Føles som: @_weatherData.FeelsLike°C</div>
+        <div>Beskrivelse: @_weatherData.Description</div>
+        <div>Vær: @_weatherData.Condition</div>
+        <div>Luftfuktighet: @_weatherData.Humidity%</div>
+        <div>Vind: @_weatherData.WindSpeed m/s, @_weatherData.WindDirection</div>
+    </div>
 }
 
 @if (!string.IsNullOrEmpty(_errorMessage))
@@ -36,14 +41,14 @@
             _errorMessage = "Vennligst skriv inn en by.";
             return;
         }
-        
+
         try
         {
             var baseUrl = Configuration["ApiBaseUrl"] ?? "https://localhost:7291";
             var apiUrl = $"{baseUrl}/api/weather/{_city}";
 
             var response = await Http.GetAsync(apiUrl);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 _errorMessage = $"Feil fra API: {response.StatusCode}";
@@ -52,7 +57,6 @@
 
             _weatherData = await response.Content.ReadFromJsonAsync<WeatherData>();
             _errorMessage = null;
-            
         }
         catch (Exception ex)
         {
