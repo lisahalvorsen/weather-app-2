@@ -1,9 +1,25 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using Microsoft.AspNetCore.Components
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
     <NotFound>
-        <RedirectTo page="/weather"></RedirectTo>
+        <h3>Page not found. Redirecting...</h3>
     </NotFound>
 </Router>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        var currentUrl = Navigation.Uri.ToLower();
+
+        // Sjekk om vi allerede er på "/weather"
+        if (!currentUrl.EndsWith("/weather"))
+        {
+            Navigation.NavigateTo("/weather", true);
+        }
+    }
+}
