@@ -1,20 +1,29 @@
 @page "/weather"
+@using System.Globalization
 @using WeatherShared
 @inject HttpClient Http
 @inject IConfiguration Configuration
 @namespace WeatherBlazor.Pages
 
-<img src="img/brislogo.png" alt="Bris logo"/>
+<img id="logo" src="img/brislogo.png" alt="Bris logo"/>
 
-<h3>Været i @(_city ?? "Ingen by valgt")</h3>
+@if (string.IsNullOrEmpty(_selectedCity))
+{
+    <h3>Hvordan er været i dag?</h3>
+}
+else
+{
+    <h3>Akkurat nå i @(_selectedCity)</h3>
+    <div id="date">@GetFormattedDate()</div>}
 
-<input @bind="_city" placeholder="Se værmelding for ..."/>
-
-<button @onclick="GetWeatherForecast">Vis værmelding</button>
+<div id="search-container">
+    <input @bind="_city" placeholder="Se værmelding for Paris"/>
+    <button @onclick="GetWeatherForecast">Se været <img id="sun" src="img/sunicon.png" alt="Sun icon"/></button>
+</div>
 
 @if (_weatherData != null)
 {
-    <div>
+    <div id="weather-data-container">
         <div>Temperatur: @Math.Round(_weatherData.Temperature, 1)°C</div>
         <div>Føles som: @Math.Round(_weatherData.FeelsLike, 1)°C</div>
         <div>Beskrivelse: @_weatherData.Description @GetWeatherEmoji()</div>
@@ -25,13 +34,15 @@
 
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <div style="color:red">@_errorMessage</div>
+    <div id="error-message">@_errorMessage</div>
 }
 
 @code {
     private string? _city;
+    private string? _selectedCity;
     private WeatherData? _weatherData;
     private string? _errorMessage;
+    private DateTime _currentDate = DateTime.Now;
 
     private async Task GetWeatherForecast()
     {
@@ -56,11 +67,14 @@
 
             _weatherData = await response.Content.ReadFromJsonAsync<WeatherData>();
             _errorMessage = null;
+            _selectedCity = _city;
         }
         catch (Exception ex)
         {
             _errorMessage = $"Noe gikk galt: {ex.Message}";
         }
+
+        _city = "";
     }
 
     private string GetWeatherEmoji()
@@ -79,4 +93,12 @@
 
         return emoji;
     }
+
+    private string GetFormattedDate()
+    {
+        var culture = new CultureInfo("nb-NO");
+        var formattedDate = _currentDate.ToString("dddd d. MMMM", culture);
+        return char.ToUpper(formattedDate[0]) + formattedDate[1..];
+    }
+
 }
