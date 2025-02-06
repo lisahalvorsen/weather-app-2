@@ -13,8 +13,10 @@
 }
 else
 {
-    <h3>Akkurat nå i @(_selectedCity)</h3>
-    <div id="date">@GetFormattedDate()</div>}
+    <h3>Akkurat nå i @CultureInfo.CurrentCulture.TextInfo.ToTitleCase(_selectedCity)</h3>
+}
+
+<div id="date">@GetFormattedDate()</div>
 
 <div id="search-container">
     <input @bind="_city" placeholder="Se værmelding for Paris"/>
@@ -26,10 +28,8 @@ else
     <div id="weather-data-container">
         <div>Temperatur: @Math.Round(_weatherData.Temperature, 1)°C</div>
         <div>Føles som: @Math.Round(_weatherData.FeelsLike, 1)°C</div>
-        <div>Beskrivelse: @_weatherData.Description @GetWeatherEmoji()</div>
-        <div>Luftfuktighet: @_weatherData.Humidity%</div>
-        <div>Vind: @Math.Round(_weatherData.WindSpeed, 1) m/s, @_weatherData.WindDirection°</div>
-    </div>
+        <div>Beskrivelse: @CapitalizeFirstLetter(_weatherData.Description) @GetWeatherEmoji()</div>        <div>Luftfuktighet: @_weatherData.Humidity%</div>
+        <div>Vind: @Math.Round(_weatherData.WindSpeed, 1) m/s (@GetWindDirection(_weatherData.WindDirection))</div>    </div>
 }
 
 @if (!string.IsNullOrEmpty(_errorMessage))
@@ -42,7 +42,7 @@ else
     private string? _selectedCity;
     private WeatherData? _weatherData;
     private string? _errorMessage;
-    private DateTime _currentDate = DateTime.Now;
+    private readonly DateTime _currentDate = DateTime.Now;
 
     private async Task GetWeatherForecast()
     {
@@ -99,6 +99,22 @@ else
         var culture = new CultureInfo("nb-NO");
         var formattedDate = _currentDate.ToString("dddd d. MMMM", culture);
         return char.ToUpper(formattedDate[0]) + formattedDate[1..];
+    }
+
+    private string CapitalizeFirstLetter(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return "";
+        }
+
+        return char.ToUpper(text[0]) + text[1..].ToLower();
+    }
+
+    private string GetWindDirection(float degrees)
+    {
+        string[] directions = { "N", "NØ", "Ø", "SØ", "S", "SV", "V", "NV", "N" };
+        return directions[(int)Math.Round(((double)degrees % 360) / 45)];
     }
 
 }

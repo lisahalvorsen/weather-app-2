@@ -67,28 +67,22 @@ h3 {
     transform: translate(-50%, 0);
 }
 
-#date {
+#date, #error-message {
     position: absolute;
     top: 16vh;
     left: 50%;
     transform: translate(-50%, 0);
-}
-
-#error-message {
-    position: absolute;
-    top: 16vh;
-    left: 50%;
-    transform: translate(-50%, 0);
+    font-size: 1.2rem;
+    font-weight: 300;
     color: #000;
 }
 
 #search-container {
     display: flex;
     position: absolute;
-    top: 17vh;
+    top: 22vh;
     left: 50%;
     transform: translate(-50%, 0);
-    margin-top: 15px;
     gap: 10px;
 }
 
@@ -99,7 +93,7 @@ h3 {
     align-items: center;
     
     position: absolute;
-    top: 25vh;
+    top: 30vh;
     left: 50%;
     transform: translate(-50%, 0);
     width: auto;
@@ -110,10 +104,6 @@ h3 {
     height: 1.5em;
     width: 1.5em;
 }
-
-/*html, body {*/
-/*    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;*/
-/*}*/
 
 /*h1:focus {*/
 /*    outline: none;*/
