@@ -62,3 +62,5 @@ public class WeatherController : ControllerBase
         }
     }
 }
+
+// fikse errormessage vs. dato

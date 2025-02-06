@@ -5,7 +5,8 @@
 @inject IConfiguration Configuration
 @namespace WeatherBlazor.Pages
 
-<img id="logo" src="img/brislogo.png" alt="Bris logo"/>
+<img id="logo" src="img/brislogo.png" alt="Bris logo" @onclick="GoToHomepage"/>
+
 
 @if (string.IsNullOrEmpty(_selectedCity))
 {
@@ -13,7 +14,7 @@
 }
 else
 {
-    <h3>Akkurat nå i @CultureInfo.CurrentCulture.TextInfo.ToTitleCase(_selectedCity)</h3>
+    <h3>Akkurat nå</h3>
 }
 
 <div id="date">@GetFormattedDate()</div>
@@ -26,10 +27,16 @@ else
 @if (_weatherData != null)
 {
     <div id="weather-data-container">
-        <div>Temperatur: @Math.Round(_weatherData.Temperature, 1)°C</div>
-        <div>Føles som: @Math.Round(_weatherData.FeelsLike, 1)°C</div>
-        <div>Beskrivelse: @CapitalizeFirstLetter(_weatherData.Description) @GetWeatherEmoji()</div>        <div>Luftfuktighet: @_weatherData.Humidity%</div>
-        <div>Vind: @Math.Round(_weatherData.WindSpeed, 1) m/s (@GetWindDirection(_weatherData.WindDirection))</div>    </div>
+        <div class="weather-card" title="Sted">📍 @CultureInfo.CurrentCulture.TextInfo.ToTitleCase(_selectedCity)</div>
+        <div class="weather-card" title="Temperatur">🌡️ @Math.Round(_weatherData.Temperature, 1)°C</div>
+        <div class="weather-card" title="Føles som">Føles som @Math.Round(_weatherData.FeelsLike, 1)°C</div>
+        <div class="weather-card"
+             title="Værbeskrivelse">@CapitalizeFirstLetter(_weatherData.Description) @GetWeatherEmoji()</div>
+        <div class="weather-card" title="Luftfuktighet">💧 @_weatherData.Humidity%</div>
+        <div class="weather-card" title="Vindstyrke og retning">💨 @Math.Round(_weatherData.WindSpeed, 1) m/s
+            (@GetWindDirection(_weatherData.WindDirection))
+        </div>
+    </div>
 }
 
 @if (!string.IsNullOrEmpty(_errorMessage))
@@ -48,7 +55,7 @@ else
     {
         if (string.IsNullOrWhiteSpace(_city))
         {
-            _errorMessage = "Vennligst skriv inn en by.";
+            _errorMessage = "Du må skrive inn en by eller et sted!";
             return;
         }
 
@@ -61,7 +68,8 @@ else
 
             if (!response.IsSuccessStatusCode)
             {
-                _errorMessage = $"Feil fra API: {response.StatusCode}";
+                _errorMessage = "Finner ikke stedet 🤔";
+                Console.WriteLine($"Feil fra API: {response.StatusCode}");
                 return;
             }
 
@@ -71,7 +79,8 @@ else
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Noe gikk galt: {ex.Message}";
+            _errorMessage = $"Kunne ikke hente værmeldingen, prøv igjen senere 😊";
+            Console.WriteLine($"Noe gikk galt: {ex.Message}");
         }
 
         _city = "";
@@ -101,7 +110,7 @@ else
         return char.ToUpper(formattedDate[0]) + formattedDate[1..];
     }
 
-    private string CapitalizeFirstLetter(string text)
+    private static string CapitalizeFirstLetter(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -111,10 +120,18 @@ else
         return char.ToUpper(text[0]) + text[1..].ToLower();
     }
 
-    private string GetWindDirection(float degrees)
+    private static string GetWindDirection(float degrees)
     {
         string[] directions = { "N", "NØ", "Ø", "SØ", "S", "SV", "V", "NV", "N" };
         return directions[(int)Math.Round(((double)degrees % 360) / 45)];
+    }
+
+    private void GoToHomepage()
+    {
+        _city = null;
+        _selectedCity = null;
+        _weatherData = null;
+        _errorMessage = null;
     }
 
 }
