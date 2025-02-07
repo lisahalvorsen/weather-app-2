@@ -6,3 +6,4 @@ riderModule.iml
 appsettings.json
 launchSettings.json
 .idea/
+WeatherApi/WeatherApi.http
