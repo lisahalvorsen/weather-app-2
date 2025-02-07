@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\WeatherShared\WeatherShared.csproj" />
+        <Content Include="index.html" />
     </ItemGroup>
 
 </Project>
