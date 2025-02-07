@@ -65,9 +65,6 @@ else
             var apiUrl = $"{baseUrl}/api/weather/{_city}";
 
             var response = await Http.GetAsync(apiUrl);
-            var responseData = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine("API Response: " + responseData);
 
             if (!response.IsSuccessStatusCode)
             {
