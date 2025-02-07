@@ -20,7 +20,7 @@ else
 <div id="date">@GetFormattedDate()</div>
 
 <div id="search-container">
-    <input @bind="_city" placeholder="Se værmelding for Paris"/>
+    <input @bind="_city" placeholder="Sjekk været i ..."/>
     <button @onclick="GetWeatherForecast">Se været <img id="sun" src="img/sunicon.png" alt="Sun icon"/></button>
 </div>
 
@@ -65,6 +65,9 @@ else
             var apiUrl = $"{baseUrl}/api/weather/{_city}";
 
             var response = await Http.GetAsync(apiUrl);
+            var responseData = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine("API Response: " + responseData);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -96,6 +99,9 @@ else
             WeatherCondition.Snow => "🌨️",
             WeatherCondition.Sun => "☀️",
             WeatherCondition.Wind => "💨",
+            WeatherCondition.Fog => "🌫️",
+            WeatherCondition.Mist => "🌫️",
+            WeatherCondition.Haze => "🌫️",
             WeatherCondition.Other => "❔",
             _ => ""
         };
@@ -107,7 +113,7 @@ else
     {
         var culture = new CultureInfo("nb-NO");
         var formattedDate = _currentDate.ToString("dddd d. MMMM", culture);
-        return char.ToUpper(formattedDate[0]) + formattedDate[1..];
+        return CapitalizeFirstLetter(formattedDate);
     }
 
     private static string CapitalizeFirstLetter(string text)
@@ -122,7 +128,7 @@ else
 
     private static string GetWindDirection(float degrees)
     {
-        string[] directions = { "N", "NØ", "Ø", "SØ", "S", "SV", "V", "NV", "N" };
+        string[] directions = ["N", "NØ", "Ø", "SØ", "S", "SV", "V", "NV", "N"];
         return directions[(int)Math.Round(((double)degrees % 360) / 45)];
     }
 

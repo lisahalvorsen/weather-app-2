@@ -8,5 +8,8 @@ public enum WeatherCondition
     Snow,
     Sun,
     Wind,
+    Fog,
+    Mist,
+    Haze,
     Other
 }
